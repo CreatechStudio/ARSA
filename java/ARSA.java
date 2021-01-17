@@ -8,6 +8,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
@@ -95,7 +96,7 @@ public class ARSA {
         public static APrivateKey importPrivateKey(String privateKey, int keyLength) throws NoSuchAlgorithmException, InvalidKeySpecException {
             byte[] buffer = Base64.getDecoder().decode(privateKey);
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(buffer);
+            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(buffer);
             return new APrivateKey(privateKey, keyFactory.generatePrivate(keySpec), keyLength);
         }
 
