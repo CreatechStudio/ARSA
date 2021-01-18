@@ -37,15 +37,16 @@
 
    #### *Python 3+*
 
-   Download source code (.py) [here](https://github.com/ATATC/ARSA/releases/).
+   Download source code (.py) [here](https://github.com/ATATC/ARSA/releases/),
+   or install through pip:
 
-   Windows
+   #### *Windows*
 
    ```powershell
    pip install arsa
    ```
 
-   Linux
+   #### *Linux*
 
    ```shell
    pip3 install arsa
