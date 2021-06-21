@@ -1,13 +1,13 @@
 from Crypto.Signature import PKCS1_v1_5 as _Signature_pkcs1_v1_5
 from Crypto.Cipher import PKCS1_v1_5 as _Cipher_pkcs1_v1_5
-from Crypto.PublicKey import RSA as _rsa
-from Crypto.Hash import SHA256 as _Hash_hash256
+from Crypto.PublicKey import RSA as _RSA
+from Crypto.Hash import SHA256 as _SHA256
 from Crypto import Random
 import base64
 
 
 class AKeyPair(object):
-    def __init__(self, public_key: _rsa.RsaKey, private_key: _rsa.RsaKey):
+    def __init__(self, public_key: _RSA.RsaKey, private_key: _RSA.RsaKey):
         self.__public_key: APublicKey = APublicKey(public_key)
         self.__private_key: APrivateKey = APrivateKey(private_key)
 
@@ -24,7 +24,7 @@ class APublicKey(object):
     调用new_keys(key_length)生成或导入一个已有的bytes类型的pem格式公钥，使其成为arsa可以使用的公钥对象
     """
 
-    def __init__(self, public_key: _rsa.RsaKey, key_length: int = 2048):
+    def __init__(self, public_key: _RSA.RsaKey, key_length: int = 2048):
         """
         公钥对象初始化函数，
         :param public_key: 公钥的pem形式
@@ -34,7 +34,7 @@ class APublicKey(object):
         self.__key_length: int = key_length
         self.__n = public_key
 
-    def get_public_key(self) -> _rsa.RsaKey:
+    def get_public_key(self) -> _RSA.RsaKey:
         """
         获取公钥对象的RSAKey
         :return: RSAKey类型公钥对象
@@ -57,17 +57,17 @@ class APublicKey(object):
 
     @staticmethod
     def import_public_key(public_key: bytes, key_length: int):
-        return APublicKey(_rsa.import_key(b'-----BEGIN PUBLIC KEY-----\n' + public_key + b'\n-----END PUBLIC KEY-----'),
+        return APublicKey(_RSA.import_key(b'-----BEGIN PUBLIC KEY-----\n' + public_key + b'\n-----END PUBLIC KEY-----'),
                           key_length)
 
 
 class APrivateKey(object):
-    def __init__(self, private_key: _rsa.RsaKey, key_length: int = 2048):
+    def __init__(self, private_key: _RSA.RsaKey, key_length: int = 2048):
         self.__private_key = private_key.export_key()[32: -30].replace(b'\n', b'').decode()
         self.__key_length: int = key_length
         self.__n = private_key
 
-    def get_private_key(self) -> _rsa.RsaKey:
+    def get_private_key(self) -> _RSA.RsaKey:
         return self.__n
 
     def get_key_length(self) -> int:
@@ -78,12 +78,12 @@ class APrivateKey(object):
 
     @staticmethod
     def import_private_key(private_key: bytes, key_length: int):
-        return APrivateKey(_rsa.import_key(
+        return APrivateKey(_RSA.import_key(
             b'-----BEGIN RSA PRIVATE KEY-----\n' + private_key + b'\n-----END RSA PRIVATE KEY-----'), key_length)
 
 
 def new_keys(key_length: int = 2048):
-    keys = _rsa.generate(key_length, Random.new().read)
+    keys = _RSA.generate(key_length, Random.new().read)
     return AKeyPair(keys.publickey(), keys)
 
 
@@ -143,7 +143,7 @@ def sign(content: base64.bytes_types, private_key: APrivateKey) -> bytes:
     :param private_key: 私钥
     :return: 签名
     """
-    return base64.b64encode(_Signature_pkcs1_v1_5.new(private_key.get_private_key()).sign(_Hash_hash256.new(content)))
+    return base64.b64encode(_Signature_pkcs1_v1_5.new(private_key.get_private_key()).sign(_SHA256.new(content)))
 
 
 def verify(content: base64.bytes_types, signature: bytes, public_key: APublicKey) -> bool:
@@ -154,5 +154,5 @@ def verify(content: base64.bytes_types, signature: bytes, public_key: APublicKey
     :param public_key: 公钥
     :return: 如果验证成功则返回True, 反之则返回False
     """
-    return _Signature_pkcs1_v1_5.new(public_key.get_public_key()).verify(_Hash_hash256.new(content),
+    return _Signature_pkcs1_v1_5.new(public_key.get_public_key()).verify(_SHA256.new(content),
                                                                          base64.b64decode(signature))
